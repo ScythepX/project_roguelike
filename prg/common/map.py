@@ -1,13 +1,25 @@
 import struct
+from copy import copy
 
 rgmap_header = b'rgmap1'
-map_header_struct = struct.Struct('6c4L')  # b'rgmap1'; WIDTH, HEIGHT, SPAWN_X, SPAWN_Y: int
-# TODO: Add TITLE: char(50) to header
+map_header_struct = struct.Struct('4L50s')  # b'rgmap1'; WIDTH, HEIGHT, SPAWN_X, SPAWN_Y: int
 
 
-def _line_struct(width: int) -> struct.Struct:
+def _line_struct(height: int) -> struct.Struct:
     """ Generates Struct for line of tiles """
-    return struct.Struct(f'{width}iii')  # {witdth} ID: int; Rotation: int; State: int
+    return struct.Struct(f'{height*3}i')  # {height} ID: int; Rotation: int; State: int
+
+
+def _split_fields(fields):
+    arrs = []
+    fields = copy(fields)
+    size = 3
+    while len(fields) > size:
+        pice = fields[:size]
+        arrs.append(pice)
+        fields = fields[size:]
+    arrs.append(fields)
+    return arrs
 
 
 class Tile:
@@ -32,23 +44,29 @@ class Map:
 
     def load_from_file(self, filename: str):
         with open(filename, 'rb') as f:
-            header = f.read(40)
+            header = f.read(len(rgmap_header) + map_header_struct.size)
             if not header[:len(rgmap_header)] == rgmap_header:
                 raise ValueError('File has invalid format')
-            *head, width, height, self.spawn_x, self.spawn_y = map_header_struct.unpack(header)
+            buffer = map_header_struct.unpack(header[len(rgmap_header):])
+            width, height, self.spawn_x, self.spawn_y, title = buffer
+            self.title = title.decode().strip('\x00')
             for _ in range(width):
-                line = f.read(struct.calcsize(f'{height}i'))  # TODO: Use _line_struct
-                ids = struct.unpack(f'{height}i', line)  # TODO: Use _line_struct, add other fields
-                self.tiles.append([i for i in map(lambda x: Tile(x), ids)])
+                line = f.read(_line_struct(height).size)
+                fields = _split_fields(_line_struct(height).unpack(line))
+
+                self.tiles.append([i for i in map(lambda x: Tile(*x), fields)])
 
     def save_to_file(self, filename: str):
         with open(filename, 'wb') as f:
             width = len(self.tiles)
             height = len(self.tiles[0])
-            header = map_header_struct.pack(b'r', b'g', b'm', b'a', b'p', b'1', width, height, self.spawn_x,
-                                            self.spawn_y)
+            f.write(rgmap_header)
+            header = map_header_struct.pack(width, height, self.spawn_x,
+                                            self.spawn_y, bytes(self.title, encoding='utf8'))
             f.write(header)
 
             for row in self.tiles:
-                line = map(lambda x: x.id, row)
-                f.write(struct.pack(f'{len(row)}i', *line))  # TODO: Use _line_struct, add other fields
+                line = []
+                for i in row:
+                    line += [i.id, i.rotation, i.state]
+                f.write(_line_struct(len(row)).pack(*line))
