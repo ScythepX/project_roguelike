@@ -1,6 +1,13 @@
 import struct
 
-map_header_struct = struct.Struct('6c4L')
+
+map_header_struct = struct.Struct('6c4L')  # b'rgmap1'; WIDTH, HEIGHT, SPAWN_X, SPAWN_Y: int
+# TODO: Add TITLE: char(50) to header
+
+
+def _line_struct(width: int) -> struct.Struct:
+    """ Generates Struct for line of tiles """
+    return struct.Struct(f'{width}iii')  # {witdth} ID: int; Rotation: int; State: int
 
 
 class Tile:
@@ -30,8 +37,8 @@ class Map:
             if not b''.join(head) == b'rgmap1':
                 raise ValueError('File has invalid format')
             for _ in range(height):
-                line = f.read(struct.calcsize(f'{width}i'))
-                ids = struct.unpack(f'{width}i', line)
+                line = f.read(struct.calcsize(f'{width}i'))  # TODO: Use _line_struct
+                ids = struct.unpack(f'{width}i', line)  # TODO: Use _line_struct, add other fields
                 self.tiles += [*ids]
 
     def save_to_file(self, filename: str):
@@ -44,7 +51,7 @@ class Map:
 
             for row in self.tiles:
                 line = map(lambda x: x.id, row)
-                f.write(struct.pack(f'{len(row)}i', *line))
+                f.write(struct.pack(f'{len(row)}i', *line))  # TODO: Use _line_struct, add other fields
 
 
 line1 = [Tile(i) for i in range(5)]
