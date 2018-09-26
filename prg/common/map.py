@@ -1,6 +1,6 @@
 import struct
 
-
+rgmap_header = b'rgmap1'
 map_header_struct = struct.Struct('6c4L')  # b'rgmap1'; WIDTH, HEIGHT, SPAWN_X, SPAWN_Y: int
 # TODO: Add TITLE: char(50) to header
 
@@ -33,9 +33,9 @@ class Map:
     def load_from_file(self, filename: str):
         with open(filename, 'rb') as f:
             header = f.read(40)
-            *head, width, height, self.spawn_x, self.spawn_y = map_header_struct.unpack(header)
-            if not b''.join(head) == b'rgmap1':
+            if not header[:len(rgmap_header)] == rgmap_header:
                 raise ValueError('File has invalid format')
+            *head, width, height, self.spawn_x, self.spawn_y = map_header_struct.unpack(header)
             for _ in range(width):
                 line = f.read(struct.calcsize(f'{height}i'))  # TODO: Use _line_struct
                 ids = struct.unpack(f'{height}i', line)  # TODO: Use _line_struct, add other fields

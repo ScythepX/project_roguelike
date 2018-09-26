@@ -5,9 +5,14 @@ from os.path import exists
 
 
 class WorkWithFiles(unittest.TestCase):
+    def setUp(self):
+        with open('invalid', 'wb') as f:
+            f.write(b'i am not rgmap file')
+
     def tearDown(self):
         if exists('test'):
             remove('test')
+        remove('invalid')
 
     def test_save_load(self):
         line1 = [Tile(i) for i in range(5)]
@@ -24,6 +29,11 @@ class WorkWithFiles(unittest.TestCase):
         new_tiles = [*m.tiles[0], *m.tiles[1]]
         new_ids = [i for i in map(lambda x: x.id, new_tiles)]
         self.assertEqual(old_ids, new_ids)
+
+    def test_load_invalid_format(self):
+        m = Map()
+        with self.assertRaises(ValueError):
+            m.load_from_file('invalid')
 
 
 if __name__ == '__main__':
