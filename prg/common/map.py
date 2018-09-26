@@ -2,7 +2,7 @@ import struct
 from copy import copy
 
 rgmap_header = b'rgmap1'
-map_header_struct = struct.Struct('4L50s')  # b'rgmap1'; WIDTH, HEIGHT, SPAWN_X, SPAWN_Y: int
+map_header_struct = struct.Struct('4i50s')  # b'rgmap1'; WIDTH, HEIGHT, SPAWN_X, SPAWN_Y: int
 
 
 def _line_struct(height: int) -> struct.Struct:
