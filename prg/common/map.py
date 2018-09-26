@@ -36,10 +36,10 @@ class Map:
             *head, width, height, self.spawn_x, self.spawn_y = map_header_struct.unpack(header)
             if not b''.join(head) == b'rgmap1':
                 raise ValueError('File has invalid format')
-            for _ in range(height):
-                line = f.read(struct.calcsize(f'{width}i'))  # TODO: Use _line_struct
-                ids = struct.unpack(f'{width}i', line)  # TODO: Use _line_struct, add other fields
-                self.tiles += [*ids]
+            for _ in range(width):
+                line = f.read(struct.calcsize(f'{height}i'))  # TODO: Use _line_struct
+                ids = struct.unpack(f'{height}i', line)  # TODO: Use _line_struct, add other fields
+                self.tiles.append([i for i in map(lambda x: Tile(x), ids)])
 
     def save_to_file(self, filename: str):
         with open(filename, 'wb') as f:
@@ -52,17 +52,3 @@ class Map:
             for row in self.tiles:
                 line = map(lambda x: x.id, row)
                 f.write(struct.pack(f'{len(row)}i', *line))  # TODO: Use _line_struct, add other fields
-
-
-line1 = [Tile(i) for i in range(5)]
-line2 = [Tile(i) for i in range(10, 15)]
-m = Map()
-m.tiles = [line1, line2]
-print('Before:')
-print(m.tiles)
-m.save_to_file('test')
-m = Map()
-m.load_from_file('test')
-print('After:')
-print(m.tiles)
-__import__('os').remove('test')
