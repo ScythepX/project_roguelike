@@ -1,5 +1,7 @@
 import struct
 from copy import copy
+from typing import List, Tuple
+from .resources import ResourceManager
 
 rgmap_header = b'rgmap1'
 map_header_struct = struct.Struct('4i50s')  # b'rgmap1'; WIDTH, HEIGHT, SPAWN_X, SPAWN_Y: int
@@ -10,7 +12,7 @@ def _line_struct(height: int) -> struct.Struct:
     return struct.Struct(f'{height*3}i')  # {height} ID: int; Rotation: int; State: int
 
 
-def _split_fields(fields):
+def _split_fields(fields: Tuple[int]) -> List[List[int]]:
     arrs = []
     fields = copy(fields)
     size = 3
@@ -26,9 +28,14 @@ class Tile:
 
     def __init__(self, id: int = 0, rotation: int = 0, state: int = 0, data: bytes = b''):
         self.id = id
+        self._load_resources()
         self.rotation = rotation
         self.state = state
         self.data = data
+
+    def _load_resources(self):
+        #self.rm = ResourceManager('tiles', self.id)
+        pass
 
     def __repr__(self):
         return f'Tile[{self.id}]'
@@ -36,7 +43,7 @@ class Tile:
 
 class Map:
 
-    def __init__(self, tiles=None, title: str = '', spawn_x: int = 0, spawn_y: int = 0):
+    def __init__(self, tiles: List[List[Tile]] = None, title: str = '', spawn_x: int = 0, spawn_y: int = 0):
         self.tiles = tiles if tiles else []
         self.title = title
         self.spawn_x = spawn_x
