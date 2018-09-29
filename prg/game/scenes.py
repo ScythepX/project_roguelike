@@ -1,4 +1,3 @@
-from sys import modules
 import json
 from .objects import GameObject
 from ..game import components

@@ -33,8 +33,7 @@ class ResourceManager:
             raise ResourceNotFoundError(f'"{self.id_path}" was not found')
         self.item_id = id
         self._parse_info()
-        
-        
+
     def _parse_info(self):
         try:
             with open(self.id_path + '/' + 'main', 'r') as f:
