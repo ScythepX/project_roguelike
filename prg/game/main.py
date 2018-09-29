@@ -1,12 +1,11 @@
 import pygame
 import sys
 from collections import defaultdict
+from .scenes import SceneManager
 
 
 class Game:
-    def __init__(self, caption='', width=800, height=600, fps=1/60):
-        #self.background_image = \
-        #    pygame.image.load(back_image_filename)
+    def __init__(self, caption='', width=800, height=600, fps=60):
         self.frame_rate = fps
         pygame.mixer.pre_init(44100, 16, 2, 4096)
         pygame.init()
@@ -17,10 +16,11 @@ class Game:
         self.keydown_handlers = defaultdict(list)
         self.keyup_handlers = defaultdict(list)
         self.mouse_handlers = []
+        self.manager = SceneManager()
+        self.manager.load_scene('main')
 
     def handle_events(self):
         for event in pygame.event.get():
-            print(event)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -37,12 +37,10 @@ class Game:
                     handler(event.type, event.pos)
 
     def run(self):
-        while True:#not self.game_over:
-            #self.surface.blit(self.background_image, (0, 0))
+        while True:
 
             self.handle_events()
-            #self.update()
-            #self.draw()
-
+            self.manager.do_update()
+            self.manager.draw(self.surface)
             pygame.display.update()
             self.clock.tick(self.frame_rate)

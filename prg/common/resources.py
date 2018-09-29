@@ -1,6 +1,7 @@
 import zipfile
 import json
 from os.path import isdir, isfile, exists
+from tempfile import NamedTemporaryFile
 BASE_DIR = 'res'
 
 
@@ -35,27 +36,31 @@ class ResourceManager:
         
         
     def _parse_info(self):
-        f = self.get_resource()
         try:
-            d = json.loads(f)
+            with open(self.id_path + '/' + 'main', 'r') as f:
+                d = json.loads(f.read())
         except json.JSONDecodeError:
             raise ResourceError('Basic resource information can not be decoded')
         self.name = d.get('name', 'Unnamed Resource Item')
         self.description = d.get('description', 'No Description provided for this item')
         self.available_resources = d.get('res_list', [])
 
-    def get_resource(self, name='main'):
+    def get_resource(self, name='main') -> NamedTemporaryFile:
         if self.zip is not None:
             try:
                 with self.zip.open(name) as f:
-                    lines = f.read()
-                    return lines.decode()
+                    tmpfile = NamedTemporaryFile()
+                    tmpfile.write(f.read())
+                    tmpfile.seek(0)
+                    return tmpfile
             except KeyError:
                 raise ResourceNotFoundError(f'No item named {name} in this res pack')
         else:
             try:
-                with open(self.id_path + '/' + name, 'r') as f:
-                    lines = f.read()
-                    return lines
+                with open(self.id_path + '/' + name, 'rb') as f:
+                    tmpfile = NamedTemporaryFile()
+                    tmpfile.write(f.read())
+                    tmpfile.seek(0)
+                    return tmpfile
             except FileNotFoundError:
                 raise ResourceNotFoundError(f'No item named {name} in this res pack')

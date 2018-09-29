@@ -1,0 +1,21 @@
+{
+  "name": "Test scene",
+  "objects": [
+    {
+      "name": "test object",
+      "components": {
+        "Sprite": {
+          "resource": [
+            "sprites",
+            0,
+            "texture.png"
+          ]
+        },
+        "Transform": {
+          "x": 10,
+          "y": 20
+        }
+      }
+    }
+  ]
+}
