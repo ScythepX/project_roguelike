@@ -1,7 +1,9 @@
 from abc import ABCMeta
 from typing import List
-from ..common.resources import ResourceManager
+
 import pygame as pg
+
+from ..common.resources import ResourceManager
 
 
 class Component(metaclass=ABCMeta):
@@ -29,10 +31,10 @@ class Transform(Component):
 
 
 class Sprite(Component):
-    def __init__(self, resource: List):
+    def __init__(self, resource: dict):
         super().__init__()
-        self.rmanager = ResourceManager(resource[0], resource[1])
-        tex_path = self.rmanager.get_resource(resource[2])
+        self.rmanager = ResourceManager(resource['pack'], resource['id'])
+        tex_path = self.rmanager.get_resource(resource['filename'])
         self._texture = pg.image.load(tex_path.name)
 
     def draw(self, screen):
@@ -41,3 +43,24 @@ class Sprite(Component):
         coords = self.object.get_component(Transform).coords
         sprite = self._texture
         screen.blit(sprite, coords)
+
+
+class Script(Component):
+    def __init__(self, resource: dict):
+        super().__init__()
+        self.rmanager = ResourceManager(resource['pack'], resource['id'])
+        script_path = self.rmanager.get_resource(resource['filename'])
+        # self._script =
+
+    def on_key_down(self, key):
+        print(key)
+        pass
+
+    def on_key_up(self, key):
+        print(key)
+        pass
+
+
+class SoundSource(Component):
+    def __init__(self, resource: List):
+        pass

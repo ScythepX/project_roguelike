@@ -1,5 +1,6 @@
-from .components import Sprite, Component
 from typing import Union, List, Type
+
+from .components import Sprite, Component, Script
 
 
 class GameObject:
@@ -20,7 +21,7 @@ class GameObject:
             cmp.object = self
             self._components += [cmp]
         else:
-            ValueError("Component of such type is already exists in this object")
+            ValueError("Component of such type already exists in this object")
 
     def do_update(self):
         pass
@@ -32,3 +33,13 @@ class GameObject:
         sprite = self.get_component(Sprite)
         if sprite:
             sprite.draw(screen)
+
+    def on_key_pressed(self, key):
+        script = self.get_component(Script)
+        if script:
+            script.on_key_down(key)
+
+    def on_key_released(self, key):
+        script = self.get_component(Script)
+        if script:
+            script.on_key_up(key)

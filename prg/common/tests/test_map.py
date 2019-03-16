@@ -21,7 +21,6 @@ class WorkWithFiles(unittest.TestCase):
         old_ids = [i for i in map(lambda x: x.id, line1 + line2)]
         m = Map(title='abcd')
         m.tiles = [line1, line2]
-
         m.save_to_file('test')
         self.assertEqual(True, exists('test'))
 

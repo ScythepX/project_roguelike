@@ -1,6 +1,8 @@
-import pygame
 import sys
 from collections import defaultdict
+
+import pygame
+
 from .scenes import SceneManager
 
 
@@ -24,20 +26,18 @@ class Game:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                for handler in self.keydown_handlers[event.key]:
-                    handler(event.key)
+                self.manager.on_key_pressed(event.key)
             elif event.type == pygame.KEYUP:
-                for handler in self.keydown_handlers[event.key]:
-                    handler(event.key)
-            elif event.type in (pygame.MOUSEBUTTONDOWN,
-                                pygame.MOUSEBUTTONUP,
-                                pygame.MOUSEMOTION):
-                for handler in self.mouse_handlers:
-                    handler(event.type, event.pos)
+                self.manager.on_key_released(event.key)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                self.manager.on_mouse_down(event.pos)
+            elif event.type == pygame.MOUSEBUTTONUP:
+                self.manager.on_mouse_up(event.pos)
+            elif event.type == pygame.MOUSEMOTION:
+                self.manager.on_mouse_move(event.pos)
 
     def run(self):
         while True:
-
             self.handle_events()
             self.manager.do_update()
             self.manager.draw(self.surface)

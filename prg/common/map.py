@@ -1,7 +1,6 @@
 import struct
 from copy import copy
 from typing import List, Tuple
-from .resources import ResourceManager
 
 rgmap_header = b'rgmap1'
 map_header_struct = struct.Struct('4i50s')  # b'rgmap1'; WIDTH, HEIGHT, SPAWN_X, SPAWN_Y: int
@@ -34,7 +33,7 @@ class Tile:
         self.data = data
 
     def _load_resources(self):
-        #self.rm = ResourceManager('tiles', self.id)
+        # self.rm = ResourceManager('tiles', self.id)
         pass
 
     def __repr__(self):

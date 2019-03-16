@@ -1,4 +1,5 @@
 import json
+
 from .objects import GameObject
 from ..game import components
 
@@ -21,10 +22,26 @@ class SceneManager:
             scene.objects.append(go)
         self._scene = scene
 
-
     def do_update(self):
         for obj in self._scene.objects:
             obj.do_update()
+
+    def on_key_pressed(self, key):
+        for obj in self._scene.objects:
+            obj.on_key_pressed(key)
+
+    def on_key_released(self, key):
+        for obj in self._scene.objects:
+            obj.on_key_released(key)
+
+    def on_mouse_down(self, pos):
+        pass
+
+    def on_mouse_up(self, pos):
+        pass
+
+    def on_mouse_move(self, pos):
+        pass
 
     def draw(self, screen):
         objects = sorted(self._scene.objects, key=lambda x: x.get_z())

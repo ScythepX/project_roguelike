@@ -5,11 +5,18 @@
       "name": "test object",
       "components": {
         "Sprite": {
-          "resource": [
-            "sprites",
-            0,
-            "texture.png"
-          ]
+          "resource": {
+            "pack": "sprites",
+            "id": 0,
+            "filename": "texture.png"
+          }
+        },
+        "Script": {
+          "resource": {
+            "pack": "sprites",
+            "id": 0,
+            "filename": "texture.png"
+          }
         },
         "Transform": {
           "x": 10,
